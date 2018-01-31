@@ -1,11 +1,11 @@
 {
-  "name": "token-factory",
-  "namespace": "consensys",
+  "name": "smart-contract-executor",
   "version": "0.0.1",
-  "description": "Token Factory",
+  "description": "Smart Contract Executor",
   "scripts": {
     "prestart": "start http://localhost:3000",
-    "start": "webpack-dev-server --hot --port 3000"
+    "start": "webpack-dev-server --hot --port 3000",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "bignumber.js": "^5.0.0",
@@ -28,23 +28,24 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "babel-runtime": "^6.3.19",
+    "copy-webpack-plugin": "^1.1.1",
+    "css-loader": "^0.23.1",
     "file-loader": "^0.8.5",
+    "gh-pages": "^1.1.0",
+    "html-webpack-plugin": "^2.30.1",
+    "jquery": "^3.0.0",
     "json-loader": "^0.5.4",
-    "sass-loader": "^6.0.6",
     "less": "^2.7.1",
     "less-loader": "^2.2.3",
     "lite-server": "^2.3.0",
     "lodash": "*",
     "mkdirp": "*",
-    "url-loader": "^0.5.7",
-    "copy-webpack-plugin": "^1.1.1",
-    "css-loader": "^0.23.1",
     "node-sass": "^4.5.3",
+    "sass-loader": "^6.0.6",
     "style-loader": "^0.18.2",
+    "url-loader": "^0.5.7",
     "webpack": "^3.5.5",
-    "webpack-dev-server": "^2.7.1",
-    "html-webpack-plugin": "^2.30.1",
-    "jquery": "1.11.1"
+    "webpack-dev-server": "^2.7.1"
   },
   "author": "Andrey Leybovich"
 }
