@@ -43169,6 +43169,7 @@ var FuncForm = function (_React$Component) {
                 try {
                     // try to convert input into big number
                     (0, _bignumber2.default)(val);
+                    return true;
                 } catch (e) {
                     return false;
                 }
