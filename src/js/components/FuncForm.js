@@ -33,6 +33,7 @@ export default class FuncForm extends React.Component {
             try {
                 // try to convert input into big number
                 BigNumber(val);
+                return true;
             }
             catch(e) {
                 return false;

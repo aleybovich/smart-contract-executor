@@ -4,9 +4,11 @@ The Contract Executor allows interacting with smart contracts deployed on an Eth
 
 ## Developing
 
-```npm install```   
-```npm install -g webpack```
-```npm start```
+```
+npm install   
+npm install -g webpack
+npm start
+```
 
 ## Contributing
 

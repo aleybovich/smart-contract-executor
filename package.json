@@ -5,7 +5,7 @@
   "scripts": {
     "prestart": "start http://localhost:3000",
     "start": "webpack-dev-server --hot --port 3000",
-    "deploy": "gh-pages -d dist"
+    "deploy": "webpack && gh-pages -d dist"
   },
   "dependencies": {
     "bignumber.js": "^5.0.0",
