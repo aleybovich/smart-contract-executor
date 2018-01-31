@@ -36,6 +36,10 @@ export default class NavBar extends React.Component {
     //so have to resort to manual checking.
   }
   render() {
+
+    const networkWarning = this.props.networkId && this.props.networkId.id == 1 ? 
+      <div className="alert alert-warning"><h5>Warning: you are connected to Mainnet</h5></div> : null;
+
     return (
       <div>
         <nav style={{}} className="navbar navbar-default navbar-fixed-top">
@@ -57,6 +61,7 @@ export default class NavBar extends React.Component {
             </div>
           </div>
         </nav>
+        {networkWarning}
       </div>
     );
   }
