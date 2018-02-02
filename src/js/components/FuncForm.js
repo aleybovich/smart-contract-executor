@@ -38,6 +38,8 @@ export default class FuncForm extends React.Component {
             catch(e) {
                 return false;
             }
+        } else {
+            return true;
         }
     }
 
