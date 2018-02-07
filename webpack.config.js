@@ -11,7 +11,7 @@ module.exports = {
   },
   module: {
     loaders: [
-      { test: /bootstrap\/js\//, loader: 'imports?jQuery=jquery' },
+      { test: /bootstrap\/js\//, loader: 'imports-loader?jQuery=jquery' },
       { test: /\.(js|jsx|es6)$/, exclude: /node_modules(?!\/uport-lib)/, loader: "babel-loader"},
       { test: /\.scss$/, loader: "style-loader!css-loader!sass-loader" },
       { test: /\.css$/, loader: "style-loader!css-loader" },
