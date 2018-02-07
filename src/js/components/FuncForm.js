@@ -1,9 +1,10 @@
 import React from "react";
 import InputForm from "./inputform";
 import CheckBox from "./checkbox";
-import { ProcessTransaction } from '../util/ProcessTransaction';
 import BigNumber from 'bignumber.js';
-var Web3Utils = require('web3-utils');
+
+const Web3Utils = require('web3-utils');
+const truffleContract = require("truffle-contract"); 
 
 export default class FuncForm extends React.Component {
     constructor(props) {
@@ -91,14 +92,27 @@ export default class FuncForm extends React.Component {
 
             const funcName = this.props.funcAbi.name;
 
-            var contract = web3.eth.contract(abi).at(this.props.contractAddress);
+            const contract = truffleContract({
+                abi: abi.concat(this.props.eventsAbi)
+              });
+
+            contract.setProvider(web3.currentProvider);
+            contract.defaults({ from: fromAddress});
 
             if (isTxn) {
                 console.log("Invoking ETH transaction");
 
-                ProcessTransaction(contract, funcName, args, { from: fromAddress })
-                    .then(receipt => {
-                        console.log(receipt)
+                contract.at(this.props.contractAddress)
+                    .then(instance => {
+                        return instance[funcName](...args);
+                    })
+                    .then(tx => {
+                        if (tx.logs.length) {
+                            if (this.props.onLogs instanceof Function) {
+                                this.props.onLogs(tx.logs);
+                            }
+                        }
+                        
                         self.setState({ error: null, processing: false, result: "Success" });
                     })
                     .catch(error => {
@@ -108,15 +122,18 @@ export default class FuncForm extends React.Component {
             } else {
                 console.log("Making a simlple call");
 
-                contract[funcName].call(...args, { from: fromAddress }, (error, result) => {
-                    if (error) {
-                        console.error(error);
-                        self.setState({ error, processing: false, result: null });
-                    } else {
+                contract.at(this.props.contractAddress)
+                    .then(instance => {
+                        return instance[funcName].call(...args);
+                    })
+                    .then(result => {
                         console.log(`Result: ${result}`);
                         self.setState({ error: null, processing: false, result });
-                    }
-                });
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        self.setState({ error, processing: false, result: null });
+                    });
             }
         } catch (error) {
             console.error(error);

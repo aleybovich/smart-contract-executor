@@ -6,6 +6,14 @@ export default class FuncFormList extends React.Component {
         super(props);
     }
 
+    onLogs(logs) {
+        // If we have onLogs handler specified by the parent component, 
+        // pass the logs to it
+        if (this.props.onLogs instanceof Function) {
+            this.props.onLogs(logs);
+        }
+    }
+
     render() {
         let abi = this.props.abi;
 
@@ -13,13 +21,23 @@ export default class FuncFormList extends React.Component {
             abi = [abi];
         }
 
-        abi = abi.filter(f => f.type === "function");
+        const funcs = abi.filter(f => f.type === "function");
 
-        abi.sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase());
+        const events = abi.filter(f => f.type === "event");
+
+        funcs.sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase());
 
         return (
             <div>
-                {abi.map((f, i) => <FuncForm funcAbi={f} key={`${i}-${Date.now()}`} contractAddress={this.props.contractAddress} />)}
+                {
+                    funcs.map((f, i) => 
+                        <FuncForm 
+                            funcAbi={f} 
+                            eventsAbi={events} 
+                            key={`${i}-${Date.now()}`} 
+                            contractAddress={this.props.contractAddress}
+                            onLogs={this.onLogs.bind(this)} />)
+                }
             </div>
         );
     }

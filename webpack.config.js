@@ -17,7 +17,7 @@ module.exports = {
       { test: /\.css$/, loader: "style-loader!css-loader" },
       { test: /\.json$/, loader: 'json-loader' },
       { test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, include: [/bootstrap/, /font-awesome/], loader: 'url-loader?limit=10000&minetype=application/font-woff' },
-      { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, include: [/bootstrap/, /font-awesome/], loader: 'file-loader' }
+      { test: /\.(ttf|eot|svg|woff(2)?)(\S+)?$/, include: [/bootstrap/, /font-awesome/, /react-notifications/], loader: 'file-loader' }
     ],
     noParse: [/\.min\.js$/]
   },

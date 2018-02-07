@@ -2,6 +2,12 @@ import React from "react";
 import FuncFormList from "./components/FuncFormList";
 import HumanStandardTokenAbi from "human-standard-token-abi";
 
+// Notification panel
+import 'react-notifications/lib/notifications.css';
+import '../stylesheets/notifications.css';
+import {NotificationContainer, NotificationManager} from 'react-notifications'
+
+
 export default class ContractActionsPage extends React.Component {
     constructor(props) {
         super(props);
@@ -36,12 +42,22 @@ export default class ContractActionsPage extends React.Component {
         this.setState({ abiText: JSON.stringify(HumanStandardTokenAbi) });
     }
 
+    onLogs(logs) {
+        // We got transaction logs, display them
+        console.log(logs);
+        logs.forEach(log => {
+            const displayArgs = Object.keys(log.args).map(k => `${k} = ${log.args[k]};\n`);
+            NotificationManager.info(displayArgs, log.event);
+        });
+    }
+
     render() {
 
         const abiParseError = this.state["abi-parse-error"] ?
             <div className="alert danger">{this.state["abi-parse-error"]}</div> : null;
 
-        const functions = this.state.abi ? <FuncFormList abi={this.state.abi} contractAddress={this.state.contract_address} /> : null;
+        const functions = this.state.abi ? 
+            <FuncFormList abi={this.state.abi} contractAddress={this.state.contract_address} onLogs={this.onLogs.bind(this)}/> : null;
 
         return (
             <div>
@@ -57,6 +73,7 @@ export default class ContractActionsPage extends React.Component {
                     {abiParseError}
                 </div>
                 {functions}
+                <NotificationContainer/>
             </div>);
     }
 }
