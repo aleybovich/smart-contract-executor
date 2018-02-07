@@ -1,19 +1,24 @@
-/*
-    Method executes a smart contract transaction and waits for it to get mined
+ /**
+  * Executes a smart contract transaction (function) and waits for it to get mined
+  * 
+  * @param {string} contract - contract (created by calling web3.eth.contract(abi).at(contractAddress))
+  * @param {string} functionName - name of the function to execute
+  * @param {array} args - arguments to pass to the function
+  * @param {object} options - transaction options, e.g. {from: 0x01234, gas: 3000000}
+  * @returns {Promise} - promise is resolved after the transaction has been mined
+  */
 
-    contract  - contract instance
-    functionName - contract function to call
-    options - transaction options object, e.g. {from: 0x01234, gas: 3000000}
-    args - arguments to pass to the function
-    callback
- */
 exports.ProcessTransaction = (contract, functionName, args, options) => {
+    if (!web3) {
+        throw Error("web3 library not found");
+    }
+
     if (!contract) {
-        throw Error("contract can't be null");
+        throw Error("Contract address parameter can't be null");
     }
 
     if (!functionName) {
-        throw Error("function name can't be null");
+        throw Error("Function name parameter can't be null");
     }
 
     if (!contract[functionName]) {
