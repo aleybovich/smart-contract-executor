@@ -2,13 +2,17 @@
 
 The Contract Executor allows interacting with smart contracts deployed on an Ethereum network. It requires an injected web3 (Mist or Metamask) to function. 
 
-## Developing
+## Building/running locally
 
 ```
 npm install   
 npm install -g webpack
 npm start
 ```
+
+## Running the hosted version
+
+[Smart Contract Executor](https://aleybovich.github.io/smart-contract-executor/)
 
 ## Contributing
 
