@@ -42,9 +42,9 @@ class App extends React.Component {
             if (err) console.error(err);
             else {
                 if (knownNetworks[id]) {
-                    self.setState({networkId: { id, name: knownNetworks[id] }});
+                    self.setState({ networkId: { id, name: knownNetworks[id] } });
                 } else {
-                    self.setState({networkId: { id, name: "Unknown" }});
+                    self.setState({ networkId: { id, name: "Unknown" } });
                 }
             }
         })

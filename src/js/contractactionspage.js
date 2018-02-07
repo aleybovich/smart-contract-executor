@@ -21,42 +21,42 @@ export default class ContractActionsPage extends React.Component {
         try {
             abi = JSON.parse(this.state.abiText);
 
-            this.setState({"abi-parse-error": null, abi});
+            this.setState({ "abi-parse-error": null, abi });
         }
-        catch(error) {
-            this.setState({"abi-parse-error": error.toString(), abi: null});
+        catch (error) {
+            this.setState({ "abi-parse-error": error.toString(), abi: null });
         }
     }
 
     abiTextareaChange(event) {
-        this.setState({abiText: event.target.value});
+        this.setState({ abiText: event.target.value });
     }
 
     populateTokenAbi() {
-        this.setState({abiText: JSON.stringify(HumanStandardTokenAbi)});
+        this.setState({ abiText: JSON.stringify(HumanStandardTokenAbi) });
     }
 
     render() {
 
-        const abiParseError = this.state["abi-parse-error"] ? 
+        const abiParseError = this.state["abi-parse-error"] ?
             <div className="alert danger">{this.state["abi-parse-error"]}</div> : null;
 
-        const functions = this.state.abi ? <FuncFormList abi={this.state.abi} contractAddress={this.state.contract_address}/> : null;
-        
+        const functions = this.state.abi ? <FuncFormList abi={this.state.abi} contractAddress={this.state.contract_address} /> : null;
+
         return (
-        <div>
-            <h4> Contract: {this.state.contract_address} </h4>
-            <div className="form">
-                <div className="form-group">
-                    <textarea className="form-control" rows="5" placeholder="ABI" onChange={this.abiTextareaChange} value={this.state.abiText}></textarea>
-                </div>
-                <div className="form-group">
-                    <button className="btn btn-default" onClick={this.buildFunctions}>Build functions</button> &nbsp;
+            <div>
+                <h4> Contract: {this.state.contract_address} </h4>
+                <div className="form">
+                    <div className="form-group">
+                        <textarea className="form-control" rows="5" placeholder="ABI" onChange={this.abiTextareaChange} value={this.state.abiText}></textarea>
+                    </div>
+                    <div className="form-group">
+                        <button className="btn btn-default" onClick={this.buildFunctions}>Build functions</button> &nbsp;
                     <a href="javascript:void(0)" onClick={this.populateTokenAbi}>Populate ERC20 TokenABI</a>
+                    </div>
+                    {abiParseError}
                 </div>
-                {abiParseError}
-            </div>
-            {functions}
-        </div>);
+                {functions}
+            </div>);
     }
 }

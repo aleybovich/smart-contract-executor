@@ -1,7 +1,7 @@
 import React from "react";
 import InputForm from "./inputform";
 import CheckBox from "./checkbox";
-import {ProcessTransaction} from '../util/ProcessTransaction';
+import { ProcessTransaction } from '../util/ProcessTransaction';
 import BigNumber from 'bignumber.js';
 var Web3Utils = require('web3-utils');
 
@@ -35,7 +35,7 @@ export default class FuncForm extends React.Component {
                 BigNumber(val);
                 return true;
             }
-            catch(e) {
+            catch (e) {
                 return false;
             }
         } else {
@@ -51,31 +51,31 @@ export default class FuncForm extends React.Component {
         const errors = {};
 
         this.props.funcAbi.inputs.forEach(i => {
-            const refId=`${self.props.funcAbi.name}-${i.name}`;
+            const refId = `${self.props.funcAbi.name}-${i.name}`;
             const val = self.refs[refId].state.val;
             const placeholder = self.refs[refId].props.placeholder;
 
             if (!val) errors[refId] = `${placeholder} is empty`;
-            else if(!self.isInputValid(val, i.type)) errors[refId] = `${val} is not of type ${i.type}`;
+            else if (!self.isInputValid(val, i.type)) errors[refId] = `${val} is not of type ${i.type}`;
         })
 
         if (Object.keys(errors).length !== 0) {
-            this.setState({inputErrors: errors});
+            this.setState({ inputErrors: errors });
             return false;
         }
 
-        this.setState({inputErrors: null});
+        this.setState({ inputErrors: null });
         return true;
     }
 
     async executeFunction() {
         try {
-            
+
             if (!this.validateInputs()) return;
 
             const self = this;
             const args = this.props.funcAbi.inputs.map(i => {
-                const ref=`${self.props.funcAbi.name}-${i.name}`;
+                const ref = `${self.props.funcAbi.name}-${i.name}`;
                 return self.refs[ref].state.val;
             });
 
@@ -103,18 +103,18 @@ export default class FuncForm extends React.Component {
                     })
                     .catch(error => {
                         console.error(error);
-                        self.setState({ error, processing:false, result: null });
+                        self.setState({ error, processing: false, result: null });
                     });
             } else {
                 console.log("Making a simlple call");
 
                 contract[funcName].call(...args, { from: fromAddress }, (error, result) => {
                     if (error) {
-                         console.error(error);
-                         self.setState({ error, processing: false, result: null });
+                        console.error(error);
+                        self.setState({ error, processing: false, result: null });
                     } else {
-                         console.log(`Result: ${result}`);
-                         self.setState({ error: null, processing:false, result });
+                        console.log(`Result: ${result}`);
+                        self.setState({ error: null, processing: false, result });
                     }
                 });
             }
@@ -135,15 +135,15 @@ export default class FuncForm extends React.Component {
             var buttonMessage = "Execute";
         }
 
-        const error = this.state.error ? 
+        const error = this.state.error ?
             <div className="alert alert-danger">
                 <strong>Error!</strong> {this.state.error.toString()}
             </div> : null;
 
-        const result = this.state.result ? 
-        <div className="alert alert-success">
-            <strong>Result:</strong> {this.state.result.toString()}
-        </div> : null;
+        const result = this.state.result ?
+            <div className="alert alert-success">
+                <strong>Result:</strong> {this.state.result.toString()}
+            </div> : null;
 
         const isTxn = funcAbi.stateMutability != "view" && !funcAbi.constant;
 
@@ -157,16 +157,16 @@ export default class FuncForm extends React.Component {
                 <div className="panel-heading"><h4>{funcAbi.name}</h4></div>
                 <div className="panel-body">
                     {
-                        funcAbi.inputs.map(i => 
-                            <InputForm 
-                                key={`${funcAbi.name}-${i.name}`} 
+                        funcAbi.inputs.map(i =>
+                            <InputForm
+                                key={`${funcAbi.name}-${i.name}`}
                                 ref={`${funcAbi.name}-${i.name}`}
-                                placeholder={i.name} 
+                                placeholder={i.name}
                                 validationError={getValidationError(`${funcAbi.name}-${i.name}`)}
-                                onChange={ () => self.setState({inputErrors: null}) }/>
-                            )
+                                onChange={() => self.setState({ inputErrors: null })} />
+                        )
                     }
-                    <CheckBox key={`${funcAbi.name}-isTxn`} ref={`${funcAbi.name}-isTxn`} label=" Transaction" checked={isTxn} ref="isTxn"/>
+                    <CheckBox key={`${funcAbi.name}-isTxn`} ref={`${funcAbi.name}-isTxn`} label=" Transaction" checked={isTxn} ref="isTxn" />
                     <button type="submit" className="btn btn-default" onClick={this.executeFunction}>{buttonMessage}</button>
                     {error}
                     {result}

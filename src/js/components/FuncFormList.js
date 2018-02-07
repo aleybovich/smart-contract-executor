@@ -13,13 +13,13 @@ export default class FuncFormList extends React.Component {
             abi = [abi];
         }
 
-        abi = abi.filter( f => f.type === "function");
+        abi = abi.filter(f => f.type === "function");
 
-        abi.sort( (a, b) => a.name.toLowerCase() > b.name.toLowerCase());
+        abi.sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase());
 
         return (
             <div>
-                {abi.map((f, i) => <FuncForm funcAbi={f} key={`${i}-${Date.now()}`} contractAddress={this.props.contractAddress}/>)}
+                {abi.map((f, i) => <FuncForm funcAbi={f} key={`${i}-${Date.now()}`} contractAddress={this.props.contractAddress} />)}
             </div>
         );
     }
