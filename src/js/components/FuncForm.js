@@ -15,6 +15,11 @@ export default class FuncForm extends React.Component {
         this.state = {};
     }
 
+    resultToString(result) {
+        if (result.toPrecision instanceof Function) return result.toFormat(0);
+        return result.toString();
+    }
+
     async getAccount() {
         return new Promise((resolve, reject) => {
             web3.eth.getAccounts(function (err, accounts) {
@@ -80,9 +85,7 @@ export default class FuncForm extends React.Component {
                 return self.refs[ref].state.val;
             });
 
-            const isTxn = this.refs.isTxn.state.val;
-
-            this.setState({ error: null, processing: true });
+            this.setState({ error: null, result: null, processing: true });
 
             const fromAddress = await this.getAccount();
             console.log(`From: ${fromAddress}`);
@@ -99,7 +102,7 @@ export default class FuncForm extends React.Component {
             contract.setProvider(web3.currentProvider);
             contract.defaults({ from: fromAddress});
 
-            if (isTxn) {
+            if (this.isTransaction()) {
                 console.log("Invoking ETH transaction");
 
                 contract.at(this.props.contractAddress)
@@ -127,8 +130,9 @@ export default class FuncForm extends React.Component {
                         return instance[funcName].call(...args);
                     })
                     .then(result => {
-                        console.log(`Result: ${result}`);
-                        self.setState({ error: null, processing: false, result });
+                        const stringResult = this.resultToString(result);
+                        console.log(`Result: ${stringResult}`);
+                        self.setState({ error: null, processing: false, result: stringResult });
                     })
                     .catch(error => {
                         console.error(error);
@@ -139,6 +143,11 @@ export default class FuncForm extends React.Component {
             console.error(error);
             this.setState({ error, processing: false, result: null });
         }
+    }
+
+    isTransaction () {
+        const funcAbi = this.props.funcAbi;
+        return funcAbi.stateMutability != "view" && !funcAbi.constant;
     }
 
     render() {
@@ -153,16 +162,16 @@ export default class FuncForm extends React.Component {
         }
 
         const error = this.state.error ?
-            <div className="alert alert-danger">
+            <div className="alert alert-danger result">
                 <strong>Error!</strong> {this.state.error.toString()}
             </div> : null;
 
-        const result = this.state.result ?
-            <div className="alert alert-success">
+        const result = ("result" in this.state) && this.state.result != null ?
+            <div className="alert alert-success result">
                 <strong>Result:</strong> {this.state.result.toString()}
             </div> : null;
 
-        const isTxn = funcAbi.stateMutability != "view" && !funcAbi.constant;
+        const txnLabel = this.isTransaction() ? <div><i>Transaction</i></div> : null;
 
         const self = this;
         const getValidationError = (ref) => {
@@ -183,8 +192,8 @@ export default class FuncForm extends React.Component {
                                 onChange={() => self.setState({ inputErrors: null })} />
                         )
                     }
-                    <CheckBox key={`${funcAbi.name}-isTxn`} ref={`${funcAbi.name}-isTxn`} label=" Transaction" checked={isTxn} ref="isTxn" />
-                    <button type="submit" className="btn btn-default" onClick={this.executeFunction}>{buttonMessage}</button>
+                    {txnLabel}
+                    <button type="submit" className="btn btn-default execute" onClick={this.executeFunction}>{buttonMessage}</button>
                     {error}
                     {result}
                 </div>
