@@ -106,9 +106,15 @@ export default class FuncForm extends React.Component {
             if (this.isTransaction()) {
                 console.log("Invoking ETH transaction");
 
+                // Get 
+                let valueArg = null;
+                if (this.isPayable && parseFloat(self.state.payVal) != NaN) {
+                    valueArg = { value: parseFloat(self.state.payVal) * 10 ** 18 };
+                }
+
                 contract.at(this.props.contractAddress)
                     .then(instance => {
-                        return instance[funcName](...args);
+                        return instance[funcName](...args, valueArg);
                     })
                     .then(tx => {
                         if (tx.logs.length) {
@@ -200,7 +206,11 @@ export default class FuncForm extends React.Component {
         }
 
         const paymentLine = this.isTransaction()
-            ? <div style={{float: 'left'}}> Send <input type='text' value={this.state.payVal} onChange={this.handlePayChange}/> Eth </div>
+            ? <div style={{float: 'left'}}> Send 
+                <input 
+                    type='text' 
+                    value={this.state.payVal} 
+                    onChange={this.handlePayChange}/> Eth </div>
             : null;
 
         return (

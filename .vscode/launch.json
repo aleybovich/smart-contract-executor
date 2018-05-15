@@ -7,12 +7,6 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
-            "program": "${workspaceFolder}/3000"
-        },
-        {
-            "type": "node",
-            "request": "launch",
             "name": "Webpack",
             "program": "${workspaceFolder}/node_modules/.bin/webpack-cli",
             "args": [
