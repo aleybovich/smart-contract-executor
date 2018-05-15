@@ -4,33 +4,36 @@ import React from "react";
 A generic component for an input field.
 */
 
-var InputForm = React.createClass({
-  getInitialState: function () {
-    return {
-      val: '',
-    };
-  },
-  handleChange: function (event) {
-    this.setState({ val: event.target.value });
+export default class InputForm extends React.Component {
+    constructor(props) {
+        super(props);
 
-    // Handle possible parent handler
-    if (this.props.onChange) {
-      this.props.onChange(event);
+        this.state = { val: '' };
+
+        this.handleChange = this.handleChange.bind(this);
     }
-  },
-  render: function () {
-    const validationError = this.props.validationError;
 
-    const className = `form-control ${validationError ? " has-error" : ""}`;
+    handleChange(evt) {
+        this.setState({ val: evt.target.value });
 
-    const errorMessage = validationError ? <span className="help-block" style={{ color: "maroon" }}>{validationError}</span> : null;
+        // Handle possible parent handler
+        if (this.props.onChange) {
+            this.props.onChange(event);
+        }
+    }
 
-    return (
-      <div style={{ marginBottom: "20px" }}>
-        <input type="text" className={className} value={this.state.val} placeholder={this.props.placeholder} onChange={this.handleChange} />
-        {errorMessage}
-      </div>
-    );
-  }
-});
-module.exports = InputForm;
+    render () {
+        const validationError = this.props.validationError;
+
+        const className = `form-control ${validationError ? " has-error" : ""}`;
+
+        const errorMessage = validationError ? <span className="help-block" style={{ color: "maroon" }}>{validationError}</span> : null;
+
+        return (
+            <div style={{ marginBottom: "20px" }}>
+                <input type="text" className={className} value={this.state.val} placeholder={this.props.placeholder} onChange={this.handleChange} />
+                {errorMessage}
+            </div>
+        );
+    }
+}

@@ -12,7 +12,7 @@ export default class ContractActionsPage extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = { contract_address: this.props.params.contract_address };
+        this.state = { contract_address: this.props.match.params.contract_address };
 
         this.buildFunctions = this.buildFunctions.bind(this);
 

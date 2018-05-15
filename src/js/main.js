@@ -2,17 +2,15 @@ import { } from "../stylesheets/app.scss";
 
 import React from "react";
 import ReactDOM from "react-dom";
-import ReactRouter from "react-router";
-import { Router, Route, IndexRoute, Link } from 'react-router';
+import { Router, Route } from 'react-router-dom';
 
 import NavBar from "./navbar.js";
 import ContractActionsPage from "./contractactionspage.js";
 import ContractSearchPage from "./contractsearchpage.js";
-require('bootstrap-webpack!./bootstrap.config.js');
 const jQuery = require('jquery');
 
 //remove _k thing from URLS (removing queryKey)
-import createHistory from 'history/lib/createHashHistory';
+import createHistory from 'history/createHashHistory';
 
 let history = createHistory({
     queryKey: false
@@ -69,13 +67,12 @@ class App extends React.Component {
 
 
 window.onload = function () {
-
     ReactDOM.render((
         <Router history={history}>
-            <Route path="/" component={App}>
-                <IndexRoute component={ContractSearchPage} />
-                <Route path="/contract/:contract_address" component={ContractActionsPage} />
-            </Route>
+            <App>
+                <Route exact path='/' component={ContractSearchPage} />
+                <Route path='/contract/:contract_address' component={ContractActionsPage} />
+            </App>
         </Router>
     ), document.getElementById('main'));
 };

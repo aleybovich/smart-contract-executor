@@ -33,6 +33,6 @@ export default class ContractSearchPage extends React.Component {
 
     gotoContract() {
         console.log(this.state.value);
-        this.props.history.pushState(null, `/contract/${this.state.value}`);
+        this.props.history.push(`/contract/${this.state.value}`);
     }
 };
