@@ -11,8 +11,9 @@ export default class FuncForm extends React.Component {
         super(props);
 
         this.executeFunction = this.executeFunction.bind(this);
+        this.handlePayChange = this.handlePayChange.bind(this);
 
-        this.state = {};
+        this.state = { payVal: '' };
     }
 
     resultToString(result) {
@@ -105,9 +106,15 @@ export default class FuncForm extends React.Component {
             if (this.isTransaction()) {
                 console.log("Invoking ETH transaction");
 
+                // Get 
+                let valueArg = null;
+                if (this.isPayable && parseFloat(self.state.payVal) != NaN) {
+                    valueArg = { value: parseFloat(self.state.payVal) * 10 ** 18 };
+                }
+
                 contract.at(this.props.contractAddress)
                     .then(instance => {
-                        return instance[funcName](...args);
+                        return instance[funcName](...args, valueArg);
                     })
                     .then(tx => {
                         if (tx.logs.length) {
@@ -150,6 +157,28 @@ export default class FuncForm extends React.Component {
         return funcAbi.stateMutability != "view" && !funcAbi.constant;
     }
 
+    isPayable () {
+        const funcAbi = this.props.funcAbi;
+        return funcAbi.payable;
+    }
+
+    handlePayChange(evt) {
+        const reg = /[-+]?[0-9]*\.?[0-9]*/;
+        const val = evt.target.value;
+
+        if (!val) {
+            this.setState({ payVal: '' });
+        } else {
+            const matches = val.match(reg);
+
+            if (matches && matches.length && matches[0] === val) {
+                this.setState({ payVal: val });
+            } else {
+                this.setState({ payVal: this.state.payVal || '' });
+            }
+        }
+    }
+
     render() {
         // abi is a JSON object
         const funcAbi = this.props.funcAbi;
@@ -158,7 +187,7 @@ export default class FuncForm extends React.Component {
         if (this.state.processing) {
             var buttonMessage = <span><i className="fa fa-circle-o-notch fa-spin"></i> Awaiting Confirmation </span>;
         } else {
-            var buttonMessage = "Execute";
+            var buttonMessage = this.isTransaction() ? "Execute Transaction" : "Query";
         }
 
         const error = this.state.error ?
@@ -171,12 +200,18 @@ export default class FuncForm extends React.Component {
                 <strong>Result:</strong> {this.state.result.toString()}
             </div> : null;
 
-        const txnLabel = this.isTransaction() ? <div><i>Transaction</i></div> : null;
-
         const self = this;
         const getValidationError = (ref) => {
             return self.state.inputErrors ? self.state.inputErrors[ref] : null;
         }
+
+        const paymentLine = this.isTransaction()
+            ? <div style={{float: 'left'}}> Send 
+                <input 
+                    type='text' 
+                    value={this.state.payVal} 
+                    onChange={this.handlePayChange}/> Eth </div>
+            : null;
 
         return (
             <div className="panel panel-default">
@@ -192,8 +227,8 @@ export default class FuncForm extends React.Component {
                                 onChange={() => self.setState({ inputErrors: null })} />
                         )
                     }
-                    {txnLabel}
-                    <button type="submit" className="btn btn-default execute" onClick={this.executeFunction}>{buttonMessage}</button>
+                    {paymentLine}
+                    <button type="submit" className="btn btn-default execute" style={{float: 'right'}} onClick={this.executeFunction}>{buttonMessage}</button>
                     {error}
                     {result}
                 </div>
