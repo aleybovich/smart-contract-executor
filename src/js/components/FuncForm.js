@@ -38,7 +38,7 @@ export default class FuncForm extends React.Component {
     }
 
     isInputValid(val, type) {
-        if (type === 'address') {
+        if (type == 'address') {
             return Web3Utils.isAddress(val);
         } else if (type.startsWith('uint')) {
             try {
