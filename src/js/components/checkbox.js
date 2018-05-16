@@ -1,5 +1,5 @@
-import React from "react";
-
+import React from 'react';
+import PropTypes from 'prop-types';
 /*
 A generic component for an input field.
 */
@@ -28,3 +28,10 @@ export default class CheckBox extends React.Component {
         );
     }
 }
+
+
+CheckBox.propTypes = {
+    checked: PropTypes.bool.isRequired,
+    name: PropTypes.string.isRequired,
+    label: PropTypes.string.isRequired,
+};

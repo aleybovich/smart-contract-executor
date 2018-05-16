@@ -1,8 +1,5 @@
-import React from "react";
-
-/*
-Simple forwarding tool to simply forward to a token page when putting in an address so the user don't have to fiddle with the URL.
-*/
+import React from 'react';
+import PropTypes from 'prop-types';
 
 export default class ContractSearchPage extends React.Component {
     constructor(props) {
@@ -19,6 +16,11 @@ export default class ContractSearchPage extends React.Component {
         this.setState({ value: event.target.value });
     }
 
+    gotoContract() {
+        console.log(this.state.value);
+        this.props.history.push(`/contract/${this.state.value}`);
+    }
+
     render() {
         return (
             <div>
@@ -30,9 +32,8 @@ export default class ContractSearchPage extends React.Component {
             </div>
         );
     }
+}
 
-    gotoContract() {
-        console.log(this.state.value);
-        this.props.history.push(`/contract/${this.state.value}`);
-    }
+ContractSearchPage.propTypes = {
+    history: PropTypes.object.isRequired,
 };

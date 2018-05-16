@@ -1,10 +1,14 @@
-import React from "react";
-import InputForm from "./inputform";
-import CheckBox from "./checkbox";
+/* eslint react/jsx-indent-props: off */
+import React from 'react';
 import BigNumber from 'bignumber.js';
+import PropTypes from 'prop-types';
+import InputForm from './inputform';
+//import CheckBox from './checkbox';
+
+const web3 = window.web3;
 
 const Web3Utils = require('web3-utils');
-const truffleContract = require("truffle-contract"); 
+const truffleContract = require('truffle-contract');
 
 export default class FuncForm extends React.Component {
     constructor(props) {
@@ -16,16 +20,11 @@ export default class FuncForm extends React.Component {
         this.state = { payVal: '' };
     }
 
-    resultToString(result) {
-        if (result.toPrecision instanceof Function) return result.toFormat(0);
-        return result.toString();
-    }
-
     async getAccount() {
         return new Promise((resolve, reject) => {
-            web3.eth.getAccounts(function (err, accounts) {
+            web3.eth.getAccounts((err, accounts) => {
                 if (err) reject(err);
-                else if (!accounts.length) reject("No Metamask accounts found");
+                else if (!accounts.length) reject('No Metamask accounts found');
                 else {
                     resolve(accounts[0]);
                 }
@@ -33,16 +32,20 @@ export default class FuncForm extends React.Component {
         });
     }
 
+    resultToString(result) {
+        if (result.toPrecision instanceof Function) return result.toFormat(0);
+        return result.toString();
+    }
+
     isInputValid(val, type) {
-        if (type == "address") {
+        if (type === 'address') {
             return Web3Utils.isAddress(val);
-        } else if (type.startsWith("uint")) {
+        } else if (type.startsWith('uint')) {
             try {
                 // try to convert input into big number
                 BigNumber(val);
                 return true;
-            }
-            catch (e) {
+            } catch (e) {
                 return false;
             }
         } else {
@@ -64,7 +67,7 @@ export default class FuncForm extends React.Component {
 
             if (!val) errors[refId] = `${placeholder} is empty`;
             else if (!self.isInputValid(val, i.type)) errors[refId] = `${val} is not of type ${i.type}`;
-        })
+        });
 
         if (Object.keys(errors).length !== 0) {
             this.setState({ inputErrors: errors });
@@ -77,7 +80,6 @@ export default class FuncForm extends React.Component {
 
     async executeFunction() {
         try {
-
             if (!this.validateInputs()) return;
 
             const self = this;
@@ -97,45 +99,41 @@ export default class FuncForm extends React.Component {
             const funcName = this.props.funcAbi.name;
 
             const contract = truffleContract({
-                abi: abi.concat(this.props.eventsAbi)
-              });
+                abi: abi.concat(this.props.eventsAbi),
+            });
 
             contract.setProvider(web3.currentProvider);
-            contract.defaults({ from: fromAddress});
+            contract.defaults({ from: fromAddress });
 
             if (this.isTransaction()) {
-                console.log("Invoking ETH transaction");
+                console.log('Invoking ETH transaction');
 
-                // Get 
+                // Get
                 let valueArg = null;
-                if (this.isPayable && parseFloat(self.state.payVal) != NaN) {
-                    valueArg = { value: parseFloat(self.state.payVal) * 10 ** 18 };
+                if (this.isPayable && !isNaN(parseFloat(self.state.payVal))) {
+                    valueArg = { value: parseFloat(self.state.payVal) * (10 ** 18) };
                 }
 
                 contract.at(this.props.contractAddress)
-                    .then(instance => {
-                        return instance[funcName](...args, valueArg);
-                    })
+                    .then(instance => instance[funcName](...args, valueArg))
                     .then(tx => {
                         if (tx.logs.length) {
                             if (this.props.onLogs instanceof Function) {
                                 this.props.onLogs(tx.logs);
                             }
                         }
-                        
-                        self.setState({ error: null, processing: false, result: "Success" });
+
+                        self.setState({ error: null, processing: false, result: 'Success' });
                     })
                     .catch(error => {
                         console.error(error);
                         self.setState({ error, processing: false, result: null });
                     });
             } else {
-                console.log("Making a simlple call");
+                console.log('Making a simlple call');
 
                 contract.at(this.props.contractAddress)
-                    .then(instance => {
-                        return instance[funcName].call(...args);
-                    })
+                    .then(instance => instance[funcName].call(...args))
                     .then(result => {
                         const stringResult = this.resultToString(result);
                         console.log(`Result: ${stringResult}`);
@@ -152,12 +150,12 @@ export default class FuncForm extends React.Component {
         }
     }
 
-    isTransaction () {
+    isTransaction() {
         const funcAbi = this.props.funcAbi;
-        return funcAbi.stateMutability != "view" && !funcAbi.constant;
+        return funcAbi.stateMutability !== 'view' && !funcAbi.constant;
     }
 
-    isPayable () {
+    isPayable() {
         const funcAbi = this.props.funcAbi;
         return funcAbi.payable;
     }
@@ -184,33 +182,30 @@ export default class FuncForm extends React.Component {
         const funcAbi = this.props.funcAbi;
         if (!funcAbi.inputs) funcAbi.inputs = [];
 
+        let buttonMessage;
         if (this.state.processing) {
-            var buttonMessage = <span><i className="fa fa-circle-o-notch fa-spin"></i> Awaiting Confirmation </span>;
+            buttonMessage = <span><i className="fa fa-circle-o-notch fa-spin" /> Awaiting Confirmation </span>;
         } else {
-            var buttonMessage = this.isTransaction() ? "Execute Transaction" : "Query";
+            buttonMessage = this.isTransaction() ? 'Execute Transaction' : 'Query';
         }
 
         const error = this.state.error ?
-            <div className="alert alert-danger result">
+            (<div className="alert alert-danger result">
                 <strong>Error!</strong> {this.state.error.toString()}
-            </div> : null;
+            </div>) : null;
 
-        const result = ("result" in this.state) && this.state.result != null ?
-            <div className="alert alert-success result">
+        const result = ('result' in this.state) && this.state.result != null ?
+            (<div className="alert alert-success result">
                 <strong>Result:</strong> {this.state.result.toString()}
-            </div> : null;
+            </div>) : null;
 
         const self = this;
-        const getValidationError = (ref) => {
-            return self.state.inputErrors ? self.state.inputErrors[ref] : null;
-        }
+        const getValidationError = (ref) =>
+            (self.state.inputErrors ? self.state.inputErrors[ref] : null);
 
         const paymentLine = this.isTransaction()
-            ? <div style={{float: 'left'}}> Send 
-                <input 
-                    type='text' 
-                    value={this.state.payVal} 
-                    onChange={this.handlePayChange}/> Eth </div>
+            ? (<div style={{ float: 'left' }}> Send
+                <input type="text" value={this.state.payVal} onChange={this.handlePayChange} /> Eth </div>)
             : null;
 
         return (
@@ -219,16 +214,19 @@ export default class FuncForm extends React.Component {
                 <div className="panel-body">
                     {
                         funcAbi.inputs.map(i =>
-                            <InputForm
-                                key={`${funcAbi.name}-${i.name}`}
-                                ref={`${funcAbi.name}-${i.name}`}
-                                placeholder={i.name}
-                                validationError={getValidationError(`${funcAbi.name}-${i.name}`)}
-                                onChange={() => self.setState({ inputErrors: null })} />
+                            (
+                                <InputForm
+                                    key={`${funcAbi.name}-${i.name}`}
+                                    ref={`${funcAbi.name}-${i.name}`}
+                                    placeholder={i.name}
+                                    validationError={getValidationError(`${funcAbi.name}-${i.name}`)}
+                                    onChange={() => self.setState({ inputErrors: null })}
+                                />
+                            )
                         )
                     }
                     {paymentLine}
-                    <button type="submit" className="btn btn-default execute" style={{float: 'right'}} onClick={this.executeFunction}>{buttonMessage}</button>
+                    <button type="submit" className="btn btn-default execute" style={{ float: 'right' }} onClick={this.executeFunction}>{buttonMessage}</button>
                     {error}
                     {result}
                 </div>
@@ -236,3 +234,10 @@ export default class FuncForm extends React.Component {
         );
     }
 }
+
+FuncForm.propTypes = {
+    funcAbi: PropTypes.object.isRequired,
+    eventsAbi: PropTypes.array.isRequired,
+    contractAddress: PropTypes.string.isRequired,
+    onLogs: PropTypes.func.isRequired,
+};

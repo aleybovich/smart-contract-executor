@@ -1,19 +1,20 @@
-import { } from "../stylesheets/app.scss";
+import React from 'react';
+import createHistory from 'history/createHashHistory';
+import PropTypes from 'prop-types';
 
-import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from 'react-dom';
 import { Router, Route } from 'react-router-dom';
 
-import NavBar from "./navbar.js";
-import ContractActionsPage from "./contractactionspage.js";
-import ContractSearchPage from "./contractsearchpage.js";
-const jQuery = require('jquery');
+import { } from '../stylesheets/app.scss';
 
-//remove _k thing from URLS (removing queryKey)
-import createHistory from 'history/createHashHistory';
+import NavBar from './navbar';
+import ContractActionsPage from './contractactionspage';
+import ContractSearchPage from './contractsearchpage';
 
-let history = createHistory({
-    queryKey: false
+const web3 = window.web3;
+
+const history = createHistory({
+    queryKey: false,
 });
 
 class App extends React.Component {
@@ -22,7 +23,7 @@ class App extends React.Component {
 
         this.state = {
             blockNumber: 0,
-            offline_msg: ''
+            offline_msg: '',
         };
     }
 
@@ -30,22 +31,20 @@ class App extends React.Component {
         const self = this;
 
         const knownNetworks = {
-            1: "Mainnet",
-            3: "Ropsten",
-            4: "Rinkeby",
-            42: "Kovan"
+            1: 'Mainnet',
+            3: 'Ropsten',
+            4: 'Rinkeby',
+            42: 'Kovan',
         };
 
         web3.version.getNetwork((err, id) => {
             if (err) console.error(err);
-            else {
-                if (knownNetworks[id]) {
-                    self.setState({ networkId: { id, name: knownNetworks[id] } });
-                } else {
-                    self.setState({ networkId: { id, name: "Unknown" } });
-                }
+            else if (knownNetworks[id]) {
+                self.setState({ networkId: { id, name: knownNetworks[id] } });
+            } else {
+                self.setState({ networkId: { id, name: 'Unknown' } });
             }
-        })
+        });
     }
 
     render() {
@@ -65,13 +64,17 @@ class App extends React.Component {
     }
 }
 
+App.propTypes = {
+    children: PropTypes.array.isRequired,
+};
+
 
 window.onload = function () {
     ReactDOM.render((
         <Router history={history}>
             <App>
-                <Route exact path='/' component={ContractSearchPage} />
-                <Route path='/contract/:contract_address' component={ContractActionsPage} />
+                <Route exact path="/" component={ContractSearchPage} />
+                <Route path="/contract/:contract_address" component={ContractActionsPage} />
             </App>
         </Router>
     ), document.getElementById('main'));
