@@ -1,4 +1,4 @@
-## Contract Executor
+## Contract Executor [![Build Status](https://travis-ci.org/aleybovich/smart-contract-executor.svg?branch=master)](https://travis-ci.org/aleybovich/smart-contract-executor)
 
 The Contract Executor allows interacting with smart contracts deployed on an Ethereum network. It requires an injected web3 (Mist or Metamask) to function. 
 
