@@ -110,12 +110,14 @@ export default class FuncForm extends React.Component {
 
                 // Get
                 let valueArg = null;
-                if (this.isPayable && !isNaN(parseFloat(self.state.payVal))) {
+                if (this.isPayable() && !isNaN(parseFloat(self.state.payVal))) {
                     valueArg = { value: parseFloat(self.state.payVal) * (10 ** 18) };
+                    args.push(valueArg);
                 }
 
                 contract.at(this.props.contractAddress)
-                    .then(instance => instance[funcName](...args, valueArg))
+                    .then(instance => instance[funcName](...args)
+                    )
                     .then(tx => {
                         if (tx.logs.length) {
                             if (this.props.onLogs instanceof Function) {
@@ -191,7 +193,7 @@ export default class FuncForm extends React.Component {
 
         const error = this.state.error ?
             (<div className="alert alert-danger result">
-                <strong>Error!</strong> {this.state.error.toString()}
+                {this.state.error.toString()}
             </div>) : null;
 
         const result = ('result' in this.state) && this.state.result != null ?
@@ -203,7 +205,7 @@ export default class FuncForm extends React.Component {
         const getValidationError = (ref) =>
             (self.state.inputErrors ? self.state.inputErrors[ref] : null);
 
-        const paymentLine = this.isTransaction()
+        const paymentLine = this.isTransaction() && this.isPayable()
             ? (<div style={{ float: 'left' }}> Send
                 <input type="text" value={this.state.payVal} onChange={this.handlePayChange} /> Eth </div>)
             : null;
@@ -227,6 +229,8 @@ export default class FuncForm extends React.Component {
                     }
                     {paymentLine}
                     <button type="submit" className="btn btn-default execute" style={{ float: 'right' }} onClick={this.executeFunction}>{buttonMessage}</button>
+                </div>
+                <div className="panel-footer">
                     {error}
                     {result}
                 </div>
