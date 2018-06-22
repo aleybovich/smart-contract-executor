@@ -8,4 +8,4 @@ install:
   - webpack
 script: 
   - ./node_modules/.bin/eslint .
-  - npm run-script deploy
+#  - npm run-script deploy
